@@ -96,9 +96,84 @@
             .stats-grid { grid-template-columns: repeat(2, 1fr); }
             .chat-stats { grid-template-columns: repeat(2, 1fr); }
         }
+        
+        /* Login Page */
+        .login-page {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .login-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        .login-card h2 {
+            color: #1e3a5f;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        .login-card p {
+            color: #64748b;
+            margin-bottom: 30px;
+        }
+        .login-card input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            transition: border-color 0.3s;
+        }
+        .login-card input:focus {
+            outline: none;
+            border-color: #4a90d9;
+        }
+        .login-card .btn {
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+        }
+        .login-error {
+            color: #ef4444;
+            font-size: 14px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        .login-logo {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        .main-app {
+            display: none;
+        }
+        .main-app.show {
+            display: block;
+        }
     </style>
 </head>
 <body>
+    <!-- 登录页面 -->
+    <div id="loginPage" class="login-page">
+        <div class="login-card">
+            <div class="login-logo">🎯</div>
+            <h2>喜播助教智能助手</h2>
+            <p>请输入访问密码</p>
+            <div id="loginError" class="login-error">密码错误，请重试</div>
+            <input type="password" id="passwordInput" placeholder="请输入密码" onkeypress="if(event.key==='Enter')checkPassword()">
+            <button class="btn" onclick="checkPassword()">进入系统</button>
+        </div>
+    </div>
+    
+    <!-- 主应用 -->
+    <div id="mainApp" class="main-app">
     <div class="container">
         <div class="header">
             <h1>🎯 喜播助教智能助手</h1>
@@ -404,8 +479,40 @@
             </div>
         </div>
     </div>
+    </div><!-- end main-app -->
     
     <script>
+        // 密码配置
+        const ACCESS_PASSWORD = 'xibo666666';
+        
+        // 检查登录状态
+        function checkLoginStatus() {
+            const isLoggedIn = sessionStorage.getItem('xibo_logged_in');
+            if (isLoggedIn === 'true') {
+                document.getElementById('loginPage').style.display = 'none';
+                document.getElementById('mainApp').classList.add('show');
+            }
+        }
+        
+        // 验证密码
+        function checkPassword() {
+            const input = document.getElementById('passwordInput');
+            const error = document.getElementById('loginError');
+            
+            if (input.value === ACCESS_PASSWORD) {
+                sessionStorage.setItem('xibo_logged_in', 'true');
+                document.getElementById('loginPage').style.display = 'none';
+                document.getElementById('mainApp').classList.add('show');
+            } else {
+                error.style.display = 'block';
+                input.value = '';
+                input.focus();
+            }
+        }
+        
+        // 页面加载时检查登录状态
+        checkLoginStatus();
+        
         // 导航切换
         function showSection(sectionId) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
