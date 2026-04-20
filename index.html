@@ -605,7 +605,177 @@
         
         // ========== 私聊诊断 ==========
         function analyzeChat(fileInput) {
-            alert('聊天文件已选择：' + fileInput.files[0].name + '\n\n完整功能需要后端支持，当前可使用手动输入模式');
+            const file = fileInput.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const content = e.target.result;
+                
+                // 提取JSON数据
+                const match = content.match(/window\.downloadSessionData\s*=\s*JSON\.parse\(JSON\.stringify\((\{.*?\})\)\);/s);
+                
+                if (!match) {
+                    alert('无法解析聊天文件，请确认文件格式正确');
+                    return;
+                }
+                
+                try {
+                    const data = JSON.parse(match[1]);
+                    const messages = data.data || [];
+                    
+                    // 统计消息
+                    let assistantMsgs = 0;
+                    let studentMsgs = 0;
+                    let assistantTexts = [];
+                    let studentTexts = [];
+                    let maxConsecutive = 0;
+                    let currentConsecutive = 0;
+                    let questionCount = 0;
+                    
+                    messages.forEach(msg => {
+                        if (msg.senderType === 0) {
+                            // 助教消息
+                            assistantMsgs++;
+                            currentConsecutive++;
+                            if (currentConsecutive > maxConsecutive) {
+                                maxConsecutive = currentConsecutive;
+                            }
+                            
+                            if (msg.contentType === 'text') {
+                                try {
+                                    const text = JSON.parse(msg.decodeContent).content;
+                                    assistantTexts.push(text);
+                                    // 统计问句
+                                    if (text.includes('？') || text.includes('?') || text.includes('吗') || text.includes('呢')) {
+                                        questionCount++;
+                                    }
+                                } catch(e) {}
+                            }
+                        } else {
+                            // 学员消息
+                            studentMsgs++;
+                            currentConsecutive = 0;
+                            
+                            if (msg.contentType === 'text') {
+                                try {
+                                    const text = JSON.parse(msg.decodeContent).content;
+                                    studentTexts.push(text);
+                                } catch(e) {}
+                            }
+                        }
+                    });
+                    
+                    const total = assistantMsgs + studentMsgs;
+                    const rate = total > 0 ? (studentMsgs / total * 100).toFixed(1) : 0;
+                    const ratio = studentMsgs > 0 ? (assistantMsgs / studentMsgs).toFixed(1) : '∞';
+                    const questionRate = assistantTexts.length > 0 ? (questionCount / assistantTexts.length * 100).toFixed(1) : 0;
+                    
+                    // 显示结果
+                    document.getElementById('chatResult').style.display = 'block';
+                    document.getElementById('chatTotal').textContent = total;
+                    document.getElementById('chatAssistant').textContent = assistantMsgs;
+                    document.getElementById('chatStudent').textContent = studentMsgs;
+                    document.getElementById('chatRate').textContent = rate + '%';
+                    
+                    // 诊断
+                    let diagnosis = [];
+                    
+                    // 文件信息
+                    diagnosis.push('<div style="background: #dbeafe; padding: 10px; border-radius: 8px; margin-bottom: 15px;">');
+                    diagnosis.push('<strong>📁 文件：</strong>' + file.name + '<br>');
+                    diagnosis.push('<strong>📊 总消息数：</strong>' + data.total + ' 条');
+                    diagnosis.push('</div>');
+                    
+                    // 互动率诊断
+                    if (rate < 10) {
+                        diagnosis.push('<div style="color: #ef4444; margin-bottom: 10px;"><strong>❌ 互动率严重偏低 (' + rate + '%)</strong></div>');
+                        diagnosis.push('<p>学员几乎不回复，建议：</p>');
+                        diagnosis.push('<ul><li>停止消息轰炸，减少发送频率</li><li>尝试语音或电话沟通</li><li>了解学员真实需求</li></ul>');
+                    } else if (rate < 20) {
+                        diagnosis.push('<div style="color: #f59e0b; margin-bottom: 10px;"><strong>⚠️ 互动率偏低 (' + rate + '%)</strong></div>');
+                        diagnosis.push('<p>学员回复较少，建议：</p>');
+                        diagnosis.push('<ul><li>增加互动引导，多用问句</li><li>了解学员不回复的原因</li></ul>');
+                    } else if (rate < 30) {
+                        diagnosis.push('<div style="color: #10b981; margin-bottom: 10px;"><strong>✅ 互动率正常 (' + rate + '%)</strong></div>');
+                    } else {
+                        diagnosis.push('<div style="color: #10b981; margin-bottom: 10px;"><strong>✅ 互动率良好 (' + rate + '%)</strong></div>');
+                    }
+                    
+                    // 消息比例诊断
+                    diagnosis.push('<div style="margin: 15px 0; padding: 10px; background: #f8fafc; border-radius: 8px;">');
+                    diagnosis.push('<strong>📊 消息比例：</strong>助教 ' + assistantMsgs + ' 条 : 学员 ' + studentMsgs + ' 条 = ' + ratio + ':1');
+                    if (ratio !== '∞' && ratio > 4) {
+                        diagnosis.push('<br><span style="color: #ef4444;">⚠️ 理想比例应为2:1，助教消息过多</span>');
+                    }
+                    diagnosis.push('</div>');
+                    
+                    // 问句比例
+                    diagnosis.push('<div style="margin: 15px 0; padding: 10px; background: #f8fafc; border-radius: 8px;">');
+                    diagnosis.push('<strong>❓ 问句比例：</strong>' + questionRate + '%（' + questionCount + '/' + assistantTexts.length + '）');
+                    if (questionRate < 15) {
+                        diagnosis.push('<br><span style="color: #f59e0b;">⚠️ 问句比例偏低，建议多提问引导学员回复</span>');
+                    }
+                    diagnosis.push('</div>');
+                    
+                    // 连续发送诊断
+                    diagnosis.push('<div style="margin: 15px 0; padding: 10px; background: #f8fafc; border-radius: 8px;">');
+                    diagnosis.push('<strong>📤 最大连续发送：</strong>' + maxConsecutive + ' 条');
+                    if (maxConsecutive > 10) {
+                        diagnosis.push('<br><span style="color: #ef4444;">❌ 连续发送过多，建议每次不超过3条</span>');
+                    }
+                    diagnosis.push('</div>');
+                    
+                    // 学员回复内容
+                    if (studentTexts.length > 0) {
+                        diagnosis.push('<div style="margin: 15px 0; padding: 10px; background: #f8fafc; border-radius: 8px;">');
+                        diagnosis.push('<strong>💬 学员回复内容（前10条）：</strong>');
+                        diagnosis.push('<ol style="margin: 10px 0 0 20px; padding: 0;">');
+                        studentTexts.slice(0, 10).forEach(text => {
+                            diagnosis.push('<li>' + text.substring(0, 50) + (text.length > 50 ? '...' : '') + '</li>');
+                        });
+                        diagnosis.push('</ol></div>');
+                        
+                        // 分析学员回复质量
+                        const simpleReplies = ['好', '好的', '收到', '了解', '嗯', '哦', '行', '好嘞', 'OK'];
+                        let simpleCount = 0;
+                        studentTexts.forEach(text => {
+                            if (simpleReplies.some(r => text.includes(r) && text.length < 10)) {
+                                simpleCount++;
+                            }
+                        });
+                        
+                        if (simpleCount > studentTexts.length * 0.5) {
+                            diagnosis.push('<div style="color: #f59e0b; margin: 15px 0;"><strong>⚠️ 学员回复多为简单应答</strong></div>');
+                            diagnosis.push('<p>学员可能缺乏主动参与意愿，建议用开放式问题引导互动</p>');
+                        }
+                    }
+                    
+                    // 改进建议
+                    diagnosis.push('<div style="margin-top: 20px; padding: 15px; background: #fef3c7; border-radius: 8px; border-left: 4px solid #f59e0b;">');
+                    diagnosis.push('<strong>💡 改进建议：</strong><br>');
+                    if (rate < 20) {
+                        diagnosis.push('1. 减少单向输出，每次发送后等待学员回复<br>');
+                        diagnosis.push('2. 用开放式问题引导学员表达<br>');
+                    }
+                    if (maxConsecutive > 5) {
+                        diagnosis.push('3. 避免连续发送多条消息，合并成1-2条<br>');
+                    }
+                    if (questionRate < 15) {
+                        diagnosis.push('4. 增加问句比例，引导学员互动<br>');
+                    }
+                    diagnosis.push('5. 关键节点使用语音或电话沟通');
+                    diagnosis.push('</div>');
+                    
+                    document.getElementById('diagnosisContent').innerHTML = diagnosis.join('');
+                    
+                } catch (error) {
+                    alert('解析失败：' + error.message);
+                    console.error(error);
+                }
+            };
+            
+            reader.readAsText(file);
         }
         
         function analyzeManualChat() {
