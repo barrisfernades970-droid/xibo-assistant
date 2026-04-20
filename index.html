@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>喜播助教智能助手</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft YaHei', sans-serif; background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%); min-height: 100vh; }
+        
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        
+        /* Header */
+        .header { text-align: center; padding: 30px 0; color: white; }
+        .header h1 { font-size: 36px; margin-bottom: 10px; }
+        .header p { opacity: 0.8; font-size: 16px; }
+        
+        /* Navigation */
+        .nav { display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; flex-wrap: wrap; }
+        .nav-btn { background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.3); color: white; padding: 12px 24px; border-radius: 30px; cursor: pointer; font-size: 15px; transition: all 0.3s; }
+        .nav-btn:hover, .nav-btn.active { background: white; color: #1e3a5f; border-color: white; }
+        
+        /* Main Content */
+        .main-content { background: white; border-radius: 20px; padding: 30px; min-height: 600px; }
+        .section { display: none; }
+        .section.active { display: block; }
+        
+        /* Section Title */
+        .section-title { font-size: 24px; color: #1e3a5f; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 3px solid #4a90d9; }
+        
+        /* Cards */
+        .card { background: #f8fafc; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+        .card h3 { color: #1e3a5f; margin-bottom: 15px; font-size: 18px; }
+        
+        /* Form Elements */
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 8px; color: #2d5a87; font-weight: 500; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 14px; transition: border-color 0.3s; }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: #4a90d9; }
+        .form-group textarea { min-height: 120px; resize: vertical; }
+        
+        /* Buttons */
+        .btn { background: linear-gradient(135deg, #4a90d9 0%, #2d5a87 100%); color: white; border: none; padding: 12px 30px; border-radius: 8px; font-size: 16px; cursor: pointer; transition: transform 0.2s; }
+        .btn:hover { transform: translateY(-2px); }
+        .btn-secondary { background: #f1f5f9; color: #1e3a5f; }
+        
+        /* Stats Grid */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 20px 0; }
+        .stat-box { background: linear-gradient(135deg, #4a90d9 0%, #2d5a87 100%); color: white; padding: 25px; border-radius: 12px; text-align: center; }
+        .stat-box .value { font-size: 32px; font-weight: bold; }
+        .stat-box .label { font-size: 14px; opacity: 0.9; margin-top: 5px; }
+        
+        /* Result Box */
+        .result-box { background: #f0fdf4; border-left: 4px solid #10b981; padding: 20px; border-radius: 0 12px 12px 0; margin-top: 20px; }
+        .result-box.warning { background: #fef3c7; border-color: #f59e0b; }
+        .result-box.error { background: #fef2f2; border-color: #ef4444; }
+        .result-box h4 { color: #065f46; margin-bottom: 10px; }
+        .result-box.warning h4 { color: #92400e; }
+        .result-box.error h4 { color: #991b1b; }
+        
+        /* File Upload */
+        .file-upload { border: 2px dashed #cbd5e1; border-radius: 12px; padding: 40px; text-align: center; cursor: pointer; transition: all 0.3s; }
+        .file-upload:hover { border-color: #4a90d9; background: #f8fafc; }
+        .file-upload input { display: none; }
+        .file-upload-icon { font-size: 48px; color: #94a3b8; margin-bottom: 10px; }
+        
+        /* Timeline */
+        .timeline { position: relative; padding-left: 30px; }
+        .timeline::before { content: ''; position: absolute; left: 10px; top: 0; bottom: 0; width: 3px; background: #e2e8f0; }
+        .timeline-item { position: relative; margin-bottom: 20px; padding: 15px; background: #f8fafc; border-radius: 8px; }
+        .timeline-item::before { content: ''; position: absolute; left: -24px; top: 20px; width: 12px; height: 12px; background: #94a3b8; border-radius: 50%; }
+        .timeline-item.active { background: #dbeafe; }
+        .timeline-item.active::before { background: #4a90d9; }
+        .timeline-item h4 { color: #1e3a5f; margin-bottom: 5px; }
+        .timeline-item p { color: #64748b; font-size: 14px; }
+        
+        /* Student Card */
+        .student-card { background: white; border: 2px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 15px; }
+        .student-card.high { border-color: #10b981; background: #f0fdf4; }
+        .student-card.medium { border-color: #f59e0b; background: #fffbeb; }
+        .student-card.low { border-color: #ef4444; background: #fef2f2; }
+        .student-type { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+        .student-type.high { background: #10b981; color: white; }
+        .student-type.medium { background: #f59e0b; color: white; }
+        .student-type.low { background: #ef4444; color: white; }
+        
+        /* Chat Analysis */
+        .chat-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin: 20px 0; }
+        .chat-stat { background: #f8fafc; padding: 15px; border-radius: 8px; text-align: center; }
+        .chat-stat .value { font-size: 24px; font-weight: bold; color: #1e3a5f; }
+        .chat-stat .label { font-size: 12px; color: #64748b; }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav { flex-direction: column; align-items: center; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .chat-stats { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 喜播助教智能助手</h1>
+            <p>数据分析 · 话术生成 · 私聊诊断 · 学员画像 · 节奏提醒</p>
+        </div>
+        
+        <div class="nav">
+            <button class="nav-btn active" onclick="showSection('dashboard')">📊 数据看板</button>
+            <button class="nav-btn" onclick="showSection('scripts')">💬 话术助手</button>
+            <button class="nav-btn" onclick="showSection('chat')">🔍 私聊诊断</button>
+            <button class="nav-btn" onclick="showSection('students')">📋 学员画像</button>
+            <button class="nav-btn" onclick="showSection('schedule')">📈 节奏提醒</button>
+        </div>
+        
+        <div class="main-content">
+            <!-- 数据看板 -->
+            <div id="dashboard" class="section active">
+                <h2 class="section-title">📊 数据看板</h2>
+                
+                <div class="card">
+                    <h3>上传数据文件</h3>
+                    <div class="file-upload" onclick="document.getElementById('dataFile').click()">
+                        <input type="file" id="dataFile" accept=".xlsx,.xls,.csv" onchange="analyzeData(this)">
+                        <div class="file-upload-icon">📁</div>
+                        <p>点击上传 Excel/CSV 文件</p>
+                        <p style="font-size: 12px; color: #94a3b8;">支持：体验营转化过程汇总表</p>
+                    </div>
+                </div>
+                
+                <div id="dataResult" style="display: none;">
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <div class="value" id="statGMV">-</div>
+                            <div class="label">总GMV</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="value" id="statRate">-</div>
+                            <div class="label">转化率</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="value" id="statPrice">-</div>
+                            <div class="label">客单价</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="value" id="statValue">-</div>
+                            <div class="label">加微价值</div>
+                        </div>
+                    </div>
+                    
+                    <div class="result-box" id="dataInsight">
+                        <h4>💡 数据洞察</h4>
+                        <p id="insightText">分析结果将显示在这里...</p>
+                    </div>
+                </div>
+                
+                <!-- 手动输入模式 -->
+                <div class="card" style="margin-top: 20px;">
+                    <h3>或手动输入今日数据</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+                        <div class="form-group">
+                            <label>加微人数</label>
+                            <input type="number" id="inputAddWechat" placeholder="0">
+                        </div>
+                        <div class="form-group">
+                            <label>直播预约</label>
+                            <input type="number" id="inputReserve" placeholder="0">
+                        </div>
+                        <div class="form-group">
+                            <label>直播到课</label>
+                            <input type="number" id="inputAttend" placeholder="0">
+                        </div>
+                        <div class="form-group">
+                            <label>转化人数</label>
+                            <input type="number" id="inputConvert" placeholder="0">
+                        </div>
+                        <div class="form-group">
+                            <label>GMV</label>
+                            <input type="number" id="inputGMV" placeholder="0">
+                        </div>
+                    </div>
+                    <button class="btn" onclick="analyzeManualData()">分析数据</button>
+                </div>
+            </div>
+            
+            <!-- 话术助手 -->
+            <div id="scripts" class="section">
+                <h2 class="section-title">💬 话术助手</h2>
+                
+                <div class="card">
+                    <h3>选择场景</h3>
+                    <div class="form-group">
+                        <select id="scriptScene" onchange="updateScriptForm()">
+                            <option value="">请选择场景...</option>
+                            <option value="wake">唤醒学员（学员不回复）</option>
+                            <option value="reserve">催直播预约</option>
+                            <option value="attend">催直播到课</option>
+                            <option value="homework">催作业</option>
+                            <option value="convert">催转化（直播后）</option>
+                            <option value="price">解决价格疑虑</option>
+                            <option value="trust">建立信任</option>
+                            <option value="followup">挽回流失学员</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div id="scriptForm" style="display: none;">
+                    <div class="card">
+                        <h3>学员情况</h3>
+                        <div class="form-group">
+                            <label>学员昵称</label>
+                            <input type="text" id="studentName" placeholder="学员昵称">
+                        </div>
+                        <div class="form-group">
+                            <label>学员类型</label>
+                            <select id="studentType">
+                                <option value="high">高意向（互动多、作业完成好）</option>
+                                <option value="medium">中等意向（有互动但不积极）</option>
+                                <option value="low">低意向（几乎不回复）</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>具体情况（选填）</label>
+                            <textarea id="studentDetail" placeholder="例如：之前说过想兼职、问过价格嫌贵、有鼻炎等..."></textarea>
+                        </div>
+                        <button class="btn" onclick="generateScript()">生成话术</button>
+                    </div>
+                </div>
+                
+                <div id="scriptResult" style="display: none;">
+                    <div class="result-box">
+                        <h4>📝 推荐话术</h4>
+                        <div id="scriptContent" style="white-space: pre-wrap; line-height: 1.8;"></div>
+                    </div>
+                    <div class="result-box warning" style="margin-top: 15px;">
+                        <h4>💡 使用建议</h4>
+                        <p id="scriptTip"></p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 私聊诊断 -->
+            <div id="chat" class="section">
+                <h2 class="section-title">🔍 私聊诊断</h2>
+                
+                <div class="card">
+                    <h3>上传聊天记录</h3>
+                    <div class="file-upload" onclick="document.getElementById('chatFile').click()">
+                        <input type="file" id="chatFile" accept=".html,.txt" onchange="analyzeChat(this)">
+                        <div class="file-upload-icon">💬</div>
+                        <p>点击上传聊天记录文件</p>
+                        <p style="font-size: 12px; color: #94a3b8;">支持：HTML格式的私聊记录</p>
+                    </div>
+                </div>
+                
+                <div id="chatResult" style="display: none;">
+                    <div class="chat-stats">
+                        <div class="chat-stat">
+                            <div class="value" id="chatTotal">-</div>
+                            <div class="label">总消息数</div>
+                        </div>
+                        <div class="chat-stat">
+                            <div class="value" id="chatAssistant">-</div>
+                            <div class="label">助教发送</div>
+                        </div>
+                        <div class="chat-stat">
+                            <div class="value" id="chatStudent">-</div>
+                            <div class="label">学员回复</div>
+                        </div>
+                        <div class="chat-stat">
+                            <div class="value" id="chatRate">-</div>
+                            <div class="label">互动率</div>
+                        </div>
+                    </div>
+                    
+                    <div class="result-box" id="chatDiagnosis">
+                        <h4>🔍 诊断结果</h4>
+                        <div id="diagnosisContent"></div>
+                    </div>
+                </div>
+                
+                <!-- 手动输入模式 -->
+                <div class="card" style="margin-top: 20px;">
+                    <h3>或手动输入数据</h3>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+                        <div class="form-group">
+                            <label>助教发送消息数</label>
+                            <input type="number" id="chatInputAssistant" placeholder="0">
+                        </div>
+                        <div class="form-group">
+                            <label>学员回复消息数</label>
+                            <input type="number" id="chatInputStudent" placeholder="0">
+                        </div>
+                        <div class="form-group">
+                            <label>最大连续发送</label>
+                            <input type="number" id="chatInputConsecutive" placeholder="0">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>学员主要回复内容（选填）</label>
+                        <textarea id="chatInputContent" placeholder="例如：好的、收到、了解..."></textarea>
+                    </div>
+                    <button class="btn" onclick="analyzeManualChat()">诊断分析</button>
+                </div>
+            </div>
+            
+            <!-- 学员画像 -->
+            <div id="students" class="section">
+                <h2 class="section-title">📋 学员画像</h2>
+                
+                <div class="card">
+                    <h3>输入学员信息</h3>
+                    <div class="form-group">
+                        <label>学员昵称</label>
+                        <input type="text" id="profileName" placeholder="学员昵称">
+                    </div>
+                    <div class="form-group">
+                        <label>互动情况</label>
+                        <select id="profileInteraction">
+                            <option value="high">主动提问、积极回复</option>
+                            <option value="medium">偶尔回复、回复简短</option>
+                            <option value="low">几乎不回复</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>作业完成情况</label>
+                        <select id="profileHomework">
+                            <option value="complete">全部完成</option>
+                            <option value="partial">部分完成</option>
+                            <option value="none">未完成</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>直播参与情况</label>
+                        <select id="profileLive">
+                            <option value="full">全程参与</option>
+                            <option value="partial">部分参与</option>
+                            <option value="none">未参与</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>表达过的意向（多选）</label>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            <label><input type="checkbox" id="intentJob"> 想兼职</label>
+                            <label><input type="checkbox" id="intentInterest"> 兴趣爱好</label>
+                            <label><input type="checkbox" id="intentMoney"> 想赚钱</label>
+                            <label><input type="checkbox" id="intentLearn"> 想学习</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>其他备注</label>
+                        <textarea id="profileNote" placeholder="其他信息..."></textarea>
+                    </div>
+                    <button class="btn" onclick="analyzeProfile()">生成画像</button>
+                </div>
+                
+                <div id="profileResult" style="display: none;">
+                    <div class="student-card" id="profileCard">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <h3 id="profileResultName">学员姓名</h3>
+                            <span class="student-type" id="profileResultType">高意向</span>
+                        </div>
+                        <div id="profileResultContent"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 节奏提醒 -->
+            <div id="schedule" class="section">
+                <h2 class="section-title">📈 节奏提醒</h2>
+                
+                <div class="card">
+                    <h3>当前营期</h3>
+                    <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 20px;">
+                        <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                            <label>营期号</label>
+                            <input type="text" id="campId" placeholder="例如：260414">
+                        </div>
+                        <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                            <label>当前天数</label>
+                            <select id="campDay" onchange="updateSchedule()">
+                                <option value="-1">Day-1（进人破冰）</option>
+                                <option value="0">Day0（开营直播）</option>
+                                <option value="1" selected>Day1（变现直播）</option>
+                                <option value="2">Day2（转化直播）</option>
+                                <option value="3">Day3</option>
+                                <option value="4">Day4</option>
+                                <option value="5">Day5（结营）</option>
+                                <option value="12">Day12（回捞节点）</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>📅 今日任务清单</h3>
+                    <div id="todayTasks"></div>
+                </div>
+                
+                <div class="card">
+                    <h3>📋 完整营期节奏</h3>
+                    <div class="timeline" id="timeline"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 导航切换
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            event.target.classList.add('active');
+            
+            if (sectionId === 'schedule') {
+                updateSchedule();
+            }
+        }
+        
+        // ========== 数据看板 ==========
+        function analyzeData(fileInput) {
+            // 这里可以添加Excel解析逻辑
+            alert('数据文件已选择：' + fileInput.files[0].name + '\n\n完整功能需要后端支持，当前可使用手动输入模式');
+        }
+        
+        function analyzeManualData() {
+            const addWechat = parseInt(document.getElementById('inputAddWechat').value) || 0;
+            const reserve = parseInt(document.getElementById('inputReserve').value) || 0;
+            const attend = parseInt(document.getElementById('inputAttend').value) || 0;
+            const convert = parseInt(document.getElementById('inputConvert').value) || 0;
+            const gmv = parseInt(document.getElementById('inputGMV').value) || 0;
+            
+            const reserveRate = addWechat > 0 ? (reserve / addWechat * 100).toFixed(1) : 0;
+            const attendRate = reserve > 0 ? (attend / reserve * 100).toFixed(1) : 0;
+            const convertRate = attend > 0 ? (convert / attend * 100).toFixed(1) : 0;
+            const avgPrice = convert > 0 ? (gmv / convert).toFixed(0) : 0;
+            
+            document.getElementById('dataResult').style.display = 'block';
+            document.getElementById('statGMV').textContent = (gmv / 10000).toFixed(2) + '万';
+            document.getElementById('statRate').textContent = convertRate + '%';
+            document.getElementById('statPrice').textContent = avgPrice + '元';
+            document.getElementById('statValue').textContent = addWechat > 0 ? (gmv / addWechat).toFixed(0) + '元' : '-';
+            
+            // 生成洞察
+            let insights = [];
+            if (reserveRate < 50) {
+                insights.push('⚠️ 直播预约率偏低(' + reserveRate + '%)，建议加强预约引导');
+            }
+            if (attendRate < 60) {
+                insights.push('⚠️ 直播到课率偏低(' + attendRate + '%)，建议开播前多次提醒');
+            }
+            if (convertRate < 10) {
+                insights.push('⚠️ 转化率偏低(' + convertRate + '%)，建议一对一私聊了解学员顾虑');
+            }
+            if (insights.length === 0) {
+                insights.push('✅ 数据表现正常，继续保持');
+            }
+            
+            document.getElementById('insightText').innerHTML = insights.join('<br><br>');
+        }
+        
+        // ========== 话术助手 ==========
+        const scriptTemplates = {
+            wake: {
+                name: '唤醒学员',
+                high: [
+                    '宝，好久没看到你了~最近忙什么呢？\n有什么问题随时问我哈，我一直都在',
+                    '同学，最近学习进度怎么样了？\n有遇到什么困难吗？跟我说说，我帮你想想办法'
+                ],
+                medium: [
+                    '宝，看到消息记得回我哈~\n这几天有直播课，记得来听听，对你有帮助的',
+                    '同学，最近还好吗？\n有时间的话可以看看回放，有问题随时问我'
+                ],
+                low: [
+                    '宝，我是你的助教XX\n这几天有重要直播课，有时间的话来听听~\n有问题随时找我'
+                ]
+            },
+            reserve: {
+                name: '催直播预约',
+                high: [
+                    '宝，今天中午12点的直播记得预约！\n这节课会讲【如何通过有声演播获得兼职收入】\n我给你申请了专属福利🎁 记得准时来哦~',
+                    '同学，直播预约了吗？\n这节课非常重要，直接关系到你后面能拿到什么结果\n我给你占了个名额，到时候有福利发放❗'
+                ],
+                medium: [
+                    '宝，记得预约今天中午12点的直播\n这节课干货满满，别错过了\n点击链接就可以预约👇',
+                    '同学，直播预约一下哈\n这节课会讲变现路径，很实用\n有时间记得来听听~'
+                ],
+                low: [
+                    '今天中午12点有直播课\n有时间的话可以来听听\n点击链接预约👇'
+                ]
+            },
+            attend: {
+                name: '催直播到课',
+                high: [
+                    '👆直播马上开始啦！\n微信点击链接进入：[直播链接]\n12点准时开始，记得提前5分钟进直播间占个好位置\n这节课干货满满，别迟到哦~',
+                    '🎉直播链接来了！\n这节课是邀请制的，只有咱们班的同学才能参加\n👉点击链接进入：[直播链接]\n⚠️ 不要转发给其他人，名额有限\n我在直播间等你，不见不散~'
+                ],
+                medium: [
+                    '宝，直播已经开始了！\n现在进还来得及，正在讲核心内容\n👉点击进入：[直播链接]\n这节课有福利，错过就没有了',
+                    '直播进行中，现在讲的是重点内容\n这部分很关键，建议你来听听\n👉 [直播链接]\n还有时间，快进来吧~'
+                ],
+                low: [
+                    '直播开始了\n点击进入：[直播链接]\n有时间的话来听听'
+                ]
+            },
+            homework: {
+                name: '催作业',
+                high: [
+                    '宝，作业完成得怎么样啦？\n有什么不清楚的可以问我哦~\n完成得好的话我给你申请额外福利🎁',
+                    '同学，作业提交了吗？\n这个作业很重要，能帮你检测学习效果\n有问题随时问我哈~'
+                ],
+                medium: [
+                    '宝，记得完成作业哦~\n作业截止时间是XX，抓紧时间\n有问题可以问我',
+                    '同学，作业还没交呢\n这个作业对学习很有帮助，建议完成一下'
+                ],
+                low: [
+                    '作业记得完成\n截止时间：XX'
+                ]
+            },
+            convert: {
+                name: '催转化',
+                high: [
+                    '宝，今天直播你听了感觉怎么样？\n有什么不清楚的地方可以问我~\n我给你申请的专属福利还在，今天内报名还能多送XXX',
+                    '同学，今天直播讲的变现路径你觉得有帮助吗？\n如果你真的想进入有声行业，现在报名是最划算的\n我给你申请了专属优惠，比平时省了XXX'
+                ],
+                medium: [
+                    '宝，今天直播听了吗？\n有什么顾虑可以跟我说说，我帮你分析一下适不适合你',
+                    '同学，对今天的直播有什么问题吗？\n可以跟我说说你的想法，我帮你参考一下'
+                ],
+                low: [
+                    '今天有直播课\n有时间可以看看回放\n有问题可以问我'
+                ]
+            },
+            price: {
+                name: '解决价格疑虑',
+                templates: [
+                    '理解你的顾虑~\n其实算下来每天才XX元，比一杯奶茶还便宜\n而且现在报名有优惠，比平时省了XXX\n我给你申请了一个专属福利，今天内报名还能多送XXX',
+                    '确实要考虑实际情况~\n不过有个好消息，平台支持分期付款\n每个月只要XXX，压力会小很多\n你觉得这样可以吗？',
+                    '我理解~价格确实是一个考量因素\n但你可以想想，这个课程能给你带来什么\n如果真的想进入有声行业，这个投入是值得的\n而且现在报名是最划算的时机'
+                ]
+            },
+            trust: {
+                name: '建立信任',
+                templates: [
+                    '我是喜马拉雅APP上录书的签约主播\n也是你本次学习的负责人\n你可以叫我XX学姐/师兄\n有问题随时问我，我很愿意给你分享经验',
+                    '你是我带入行的，也算你的领路人\n不懂的随时来问我就行\n我是很愿意给你分享的\n总之一句话，你报名除了看好行业，也有一部分是信任我，怎敢辜负！',
+                    '做有声书主播，既能练好声音，又能通过读书学习很多知识\n还能自由灵活安排时间，也没啥麻烦的人际关系\n还有机会拿到不错的收入\n我觉得很适合你，加油！'
+                ]
+            },
+            followup: {
+                name: '挽回流失学员',
+                high: [
+                    '宝，今天直播你没来有点可惜😔\n我给你申请的福利名额还在，但需要今天内确认\n你现在方便吗？我把今天的重点内容发你，福利也给你安排上',
+                    '同学，好久没看到你了\n最近是有什么情况吗？\n有时间的话可以跟我说说，我帮你想想办法'
+                ],
+                medium: [
+                    '宝，最近学习进度怎么样了？\n有什么困难可以跟我说说\n我帮你分析一下',
+                    '同学，有时间的话可以看看回放\n有问题随时问我哈~'
+                ],
+                low: [
+                    '同学，有时间可以看看课程回放\n有问题可以问我'
+                ]
+            }
+        };
+        
+        function updateScriptForm() {
+            const scene = document.getElementById('scriptScene').value;
+            document.getElementById('scriptForm').style.display = scene ? 'block' : 'none';
+        }
+        
+        function generateScript() {
+            const scene = document.getElementById('scriptScene').value;
+            const name = document.getElementById('studentName').value || '同学';
+            const type = document.getElementById('studentType').value;
+            const detail = document.getElementById('studentDetail').value;
+            
+            const template = scriptTemplates[scene];
+            let scripts = [];
+            
+            if (template.templates) {
+                scripts = template.templates;
+            } else if (template[type]) {
+                scripts = template[type];
+            }
+            
+            // 替换占位符
+            let result = scripts[Math.floor(Math.random() * scripts.length)];
+            result = result.replace(/同学/g, name);
+            
+            document.getElementById('scriptResult').style.display = 'block';
+            document.getElementById('scriptContent').textContent = result;
+            
+            // 生成使用建议
+            let tips = '';
+            if (type === 'high') {
+                tips = '高意向学员：可以适当增加紧迫感，强调福利限时，推动尽快决策';
+            } else if (type === 'medium') {
+                tips = '中等意向学员：保持互动，多了解学员顾虑，针对性解决问题';
+            } else {
+                tips = '低意向学员：减少发送频率，简单提醒即可，避免过度打扰';
+            }
+            document.getElementById('scriptTip').textContent = tips;
+        }
+        
+        // ========== 私聊诊断 ==========
+        function analyzeChat(fileInput) {
+            alert('聊天文件已选择：' + fileInput.files[0].name + '\n\n完整功能需要后端支持，当前可使用手动输入模式');
+        }
+        
+        function analyzeManualChat() {
+            const assistant = parseInt(document.getElementById('chatInputAssistant').value) || 0;
+            const student = parseInt(document.getElementById('chatInputStudent').value) || 0;
+            const consecutive = parseInt(document.getElementById('chatInputConsecutive').value) || 0;
+            const content = document.getElementById('chatInputContent').value;
+            
+            const total = assistant + student;
+            const rate = total > 0 ? (student / total * 100).toFixed(1) : 0;
+            const ratio = student > 0 ? (assistant / student).toFixed(1) : '∞';
+            
+            document.getElementById('chatResult').style.display = 'block';
+            document.getElementById('chatTotal').textContent = total;
+            document.getElementById('chatAssistant').textContent = assistant;
+            document.getElementById('chatStudent').textContent = student;
+            document.getElementById('chatRate').textContent = rate + '%';
+            
+            // 诊断
+            let diagnosis = [];
+            
+            // 互动率诊断
+            if (rate < 10) {
+                diagnosis.push('<div style="color: #ef4444; margin-bottom: 10px;"><strong>❌ 互动率严重偏低 (' + rate + '%)</strong></div>');
+                diagnosis.push('<p>学员几乎不回复，建议：</p>');
+                diagnosis.push('<ul><li>停止消息轰炸，减少发送频率</li><li>尝试语音或电话沟通</li><li>了解学员真实需求</li></ul>');
+            } else if (rate < 20) {
+                diagnosis.push('<div style="color: #f59e0b; margin-bottom: 10px;"><strong>⚠️ 互动率偏低 (' + rate + '%)</strong></div>');
+                diagnosis.push('<p>学员回复较少，建议：</p>');
+                diagnosis.push('<ul><li>增加互动引导，多用问句</li><li>了解学员不回复的原因</li></ul>');
+            } else {
+                diagnosis.push('<div style="color: #10b981; margin-bottom: 10px;"><strong>✅ 互动率正常 (' + rate + '%)</strong></div>');
+            }
+            
+            // 消息比例诊断
+            if (ratio > 4) {
+                diagnosis.push('<div style="color: #ef4444; margin: 15px 0;"><strong>❌ 助教:学员消息比 ' + ratio + ':1（理想应为2:1）</strong></div>');
+                diagnosis.push('<p>助教消息过多，学员可能感到压力，建议减少发送频率</p>');
+            }
+            
+            // 连续发送诊断
+            if (consecutive > 10) {
+                diagnosis.push('<div style="color: #ef4444; margin: 15px 0;"><strong>❌ 最大连续发送 ' + consecutive + ' 条</strong></div>');
+                diagnosis.push('<p>连续发送过多，学员可能错过重要信息，建议每次不超过3条</p>');
+            }
+            
+            // 回复内容分析
+            if (content) {
+                const simpleReplies = ['好', '好的', '收到', '了解', '嗯', '哦', '行'];
+                let simpleCount = 0;
+                simpleReplies.forEach(r => {
+                    if (content.includes(r)) simpleCount++;
+                });
+                if (simpleCount > 3) {
+                    diagnosis.push('<div style="color: #f59e0b; margin: 15px 0;"><strong>⚠️ 学员回复多为简单应答</strong></div>');
+                    diagnosis.push('<p>学员可能缺乏主动参与意愿，建议用开放式问题引导互动</p>');
+                }
+            }
+            
+            document.getElementById('diagnosisContent').innerHTML = diagnosis.join('');
+        }
+        
+        // ========== 学员画像 ==========
+        function analyzeProfile() {
+            const name = document.getElementById('profileName').value || '学员';
+            const interaction = document.getElementById('profileInteraction').value;
+            const homework = document.getElementById('profileHomework').value;
+            const live = document.getElementById('profileLive').value;
+            const note = document.getElementById('profileNote').value;
+            
+            // 计算意向分数
+            let score = 0;
+            if (interaction === 'high') score += 3;
+            else if (interaction === 'medium') score += 1;
+            
+            if (homework === 'complete') score += 3;
+            else if (homework === 'partial') score += 1;
+            
+            if (live === 'full') score += 3;
+            else if (live === 'partial') score += 1;
+            
+            // 意向加分
+            if (document.getElementById('intentJob').checked) score += 2;
+            if (document.getElementById('intentMoney').checked) score += 2;
+            if (document.getElementById('intentInterest').checked) score += 1;
+            if (document.getElementById('intentLearn').checked) score += 1;
+            
+            // 判断类型
+            let type, typeClass, strategy;
+            if (score >= 8) {
+                type = '高意向';
+                typeClass = 'high';
+                strategy = '重点跟进，提供试音机会、版权书预告、一对一指导，建立师徒关系';
+            } else if (score >= 4) {
+                type = '中等意向';
+                typeClass = 'medium';
+                strategy = '保持互动，发送学习资源、作业提醒、行业资讯，了解学员顾虑';
+            } else {
+                type = '低意向';
+                typeClass = 'low';
+                strategy = '减少发送频率，简单提醒即可，避免过度打扰';
+            }
+            
+            document.getElementById('profileResult').style.display = 'block';
+            document.getElementById('profileResultName').textContent = name;
+            
+            const typeEl = document.getElementById('profileResultType');
+            typeEl.textContent = type;
+            typeEl.className = 'student-type ' + typeClass;
+            
+            const cardEl = document.getElementById('profileCard');
+            cardEl.className = 'student-card ' + typeClass;
+            
+            let content = '<div style="margin-bottom: 15px;">';
+            content += '<p><strong>互动情况：</strong>' + (interaction === 'high' ? '主动提问、积极回复' : interaction === 'medium' ? '偶尔回复' : '几乎不回复') + '</p>';
+            content += '<p><strong>作业完成：</strong>' + (homework === 'complete' ? '全部完成' : homework === 'partial' ? '部分完成' : '未完成') + '</p>';
+            content += '<p><strong>直播参与：</strong>' + (live === 'full' ? '全程参与' : live === 'partial' ? '部分参与' : '未参与') + '</p>';
+            content += '</div>';
+            
+            content += '<div style="background: white; padding: 15px; border-radius: 8px;">';
+            content += '<h4 style="margin-bottom: 10px;">📋 跟进策略</h4>';
+            content += '<p>' + strategy + '</p>';
+            content += '</div>';
+            
+            if (note) {
+                content += '<div style="margin-top: 15px; padding: 15px; background: white; border-radius: 8px;">';
+                content += '<h4 style="margin-bottom: 10px;">📝 备注</h4>';
+                content += '<p>' + note + '</p>';
+                content += '</div>';
+            }
+            
+            document.getElementById('profileResultContent').innerHTML = content;
+        }
+        
+        // ========== 节奏提醒 ==========
+        const scheduleData = {
+            '-1': {
+                name: 'Day-1',
+                title: '进人破冰',
+                tasks: [
+                    '发送欢迎语 + 档案登记要求',
+                    '引导预约Day0直播',
+                    '发送学习资料包',
+                    '建立初步信任关系'
+                ],
+                tips: '关键目标：让学员回复你，建立第一印象',
+                scripts: [
+                    {
+                        scene: '欢迎语（破冰第一句）',
+                        content: '😸XX同学 你好 🤗 这里是由【喜马拉雅生态企业】喜播官方举办的正规的免费的有声演播训练营，负责这几天学习的是我们平台非常优秀的助教老师【六月晨兮】👨‍🎓是真人\n\n✅本次训练营为期5天，接下来由【六月晨兮】和平台教务团队一起完成本次招募\n👉喜播官方会通过课程的学习和考察，招募比较适合的【有声爱好者】来邀请你入行做【兼职或全职】!\n❤如果您喜欢有声演播并且想通过学习有声演播【获得兼职机会】，请您跟着师姐认真学习这5天【体验课程】\n\n✊期待你可以认真学习，通过考核，成功拿到行业入场券🎓\n（如果你还未成年，请告知）'
+                    },
+                    {
+                        scene: '档案登记（引导回复）',
+                        content: '【档案登记】：\n❤私信发给我—文字自我介绍：\n格式：\n1、[年龄]：\n2、[职业]：\n3、[所在城市]：\n4、[空闲时间]：\n\n这样我能更好地了解你，给你安排适合的学习计划~'
+                    },
+                    {
+                        scene: '激活不回复的学员',
+                        content: '宝，看到消息记得回我哈~\n这几天有重要直播课，对你有帮助的\n有什么问题随时问我，我一直都在'
+                    },
+                    {
+                        scene: '学员回复"了解/好的"后',
+                        content: '太好了！那我们先从第一步开始~\n👆微信点击链接预约一下咱的第一节直播课\n预约成功后截图发我，我给你发见面礼🎁'
+                    },
+                    {
+                        scene: '建立信任（语音）',
+                        content: '（建议发语音）\n嗯嗯，嗨你好，我先给你打个招呼。我呢是喜马拉雅APP上录书的签约主播，也是你本次学习的负责人，你可以叫我XX学姐。这几天我会教你挺多的专业知识，有什么不懂的随时问我哈~'
+                    }
+                ]
+            },
+            '0': {
+                name: 'Day0',
+                title: '开营直播',
+                tasks: [
+                    '开播前1小时提醒学员',
+                    '开播中跟进未到课学员',
+                    '直播后发送重点回顾',
+                    '引导预约Day1直播'
+                ],
+                tips: '关键目标：提高直播到课率',
+                scripts: [
+                    {
+                        scene: '开播前1小时提醒',
+                        content: '宝，直播还有1小时就开始啦！\n12点准时开始，记得提前5分钟进直播间\n这节课会讲【有声行业入门】，干货满满\n👉点击链接进入：[直播链接]\n我在直播间等你~'
+                    },
+                    {
+                        scene: '开播前15分钟提醒',
+                        content: '👆直播马上开始！\n微信点击链接进入：[直播链接]\n提前进可以占个好位置，有问题还能优先提问哦~'
+                    },
+                    {
+                        scene: '开播中跟进未到课学员',
+                        content: '宝，直播已经开始了！\n现在进还来得及，正在讲【核心内容】\n👉点击进入：[直播链接]\n这节课很重要，别错过了~'
+                    },
+                    {
+                        scene: '直播后重点回顾',
+                        content: '【直播重点回顾】\n今天直播讲了3个核心内容：\n1. 有声行业的发展前景\n2. 新手如何快速上手\n3. 平台提供的扶持政策\n\n错过直播的同学可以看回放\n有问题随时私信我，我来帮你解答~'
+                    },
+                    {
+                        scene: '引导预约Day1直播',
+                        content: '明天的直播更重要！\n会讲【如何通过有声演播获得收入】\n我给你申请了专属福利🎁\n记得预约：[直播链接]'
+                    }
+                ]
+            },
+            '1': {
+                name: 'Day1',
+                title: '变现直播',
+                tasks: [
+                    '开播前多次提醒（上午10点、11点半）',
+                    '开播中跟进未到课学员',
+                    '直播后一对一私聊了解顾虑',
+                    '发送福利倒计时，制造紧迫感',
+                    '重点跟进高意向学员'
+                ],
+                tips: '关键目标：了解学员顾虑，为Day2转化做准备',
+                scripts: [
+                    {
+                        scene: '开播前提醒（上午10点）',
+                        content: '宝，今天中午12点的直播非常重要！\n这节课会讲【如何通过有声演播获得兼职收入】，还有我给你申请的专属福利🎁\n\n记得提前安排好时间，不要错过哦~\n直播链接我一会儿发你'
+                    },
+                    {
+                        scene: '开播前提醒（11点半）',
+                        content: '🎉直播链接来了！\n这节课是邀请制的，只有咱们班的同学才能参加\n👉点击链接进入：[直播链接]\n⚠️ 不要转发给其他人，名额有限\n\n我在直播间等你，不见不散~'
+                    },
+                    {
+                        scene: '开播中跟进',
+                        content: '宝，直播已经开始了！\n现在进还来得及，正在讲【核心变现路径】\n👉点击进入：[直播链接]\n这节课有我给你申请的专属福利，错过就没有了\n快进来吧~'
+                    },
+                    {
+                        scene: '直播后私聊（了解顾虑）',
+                        content: '宝，今天直播你听了吗？感觉怎么样？\n有什么不清楚的地方可以问我~\n是价格方面有顾虑吗？还是对课程内容有疑问？'
+                    },
+                    {
+                        scene: '学员说"再考虑考虑"',
+                        content: '没问题，可以理解~\n不过我跟你说一下，今天的优惠力度是最大的\n明天就没有这个福利了，而且名额也有限\n你主要顾虑的是什么？我帮你分析下'
+                    },
+                    {
+                        scene: '学员说"太贵了"',
+                        content: '理解你的顾虑~\n其实算下来每天才XX元，比一杯奶茶还便宜\n而且现在报名有优惠，比平时省了XXX\n我给你申请了一个专属福利，今天内报名还能多送XXX'
+                    }
+                ]
+            },
+            '2': {
+                name: 'Day2',
+                title: '转化直播（关键）',
+                tasks: [
+                    '这是转化率最高的节点',
+                    '开播前重点提醒高意向学员',
+                    '直播中强调福利限时',
+                    '直播后集中转化跟进',
+                    '解决价格疑虑，推动决策'
+                ],
+                tips: '关键目标：推动学员下单转化',
+                scripts: [
+                    {
+                        scene: '开播前提醒高意向学员',
+                        content: '宝，今天这节课专门给你准备了惊喜🎁\n我给你申请了【试音机会+版权书名额】\n12点准时来直播间，到时候我会公布怎么领取\n这节课一定要来，错过就亏大了！'
+                    },
+                    {
+                        scene: '直播中强调限时',
+                        content: '⚠️ 福利提醒\n优惠券会在报名下单的时候立减（限时1小时，超时收回）\n想要报名的同学抓紧时间\n\n福利包含：\n✅ 价值XXX的版权书\n✅ 价值XXX的赠课\n✅ 一对一指导机会'
+                    },
+                    {
+                        scene: '直播后转化跟进',
+                        content: '🎉报名方法:\n1.微信点击下方链接，下方点击[立即领取]-立即使用\n2.优惠券会在报名下单的时候立减（限时1小时，超时收回）\n3.报名成功记得第一时间截图下带订单编号订单页面给我，我来安排你进班❤️\n（👉支付成功才算报名成功）'
+                    },
+                    {
+                        scene: '学员说"没钱"',
+                        content: '理解，确实要考虑实际情况~\n不过有个好消息，平台支持分期付款\n每个月只要XXX，压力会小很多\n你觉得这样可以吗？'
+                    },
+                    {
+                        scene: '情感绑定话术',
+                        content: '你是我带入行的，也算你的领路人\n不懂的随时来问我就行，我是很愿意给你分享的\n总之一句话，你报名除了看好行业，也有一部分是信任我，怎敢辜负！加油！'
+                    },
+                    {
+                        scene: '稀缺性话术',
+                        content: '给你挑了一本版权书 可以上架设置成自己的个人专辑那种书，名额已经占下了\n中午正式入圈我把书单发你再选选🤓'
+                    }
+                ]
+            },
+            '3': {
+                name: 'Day3',
+                title: '持续跟进',
+                tasks: [
+                    '跟进未转化学员',
+                    '发送学习资源',
+                    '解答学员疑问',
+                    '维持互动热度'
+                ],
+                tips: '关键目标：保持联系，不放弃',
+                scripts: [
+                    {
+                        scene: '跟进未转化学员',
+                        content: '宝，昨天的直播你有什么问题吗？\n有什么顾虑可以跟我说说，我帮你分析一下适不适合你'
+                    },
+                    {
+                        scene: '发送学习资源',
+                        content: '给你发一个学习资料~\n这个是【XX技巧】，对新手很有帮助\n有时间看看，有问题随时问我'
+                    },
+                    {
+                        scene: '解答疑问后',
+                        content: '这个问题问得好！\n其实很多人都有这个顾虑...\n（解答后）\n还有其他问题吗？随时问我哈~'
+                    },
+                    {
+                        scene: '维持互动',
+                        content: '宝，最近学习进度怎么样了？\n有遇到什么困难吗？跟我说说，我帮你想想办法'
+                    }
+                ]
+            },
+            '4': {
+                name: 'Day4',
+                title: '持续跟进',
+                tasks: [
+                    '跟进未转化学员',
+                    '发送试音机会',
+                    '分享成功案例',
+                    '建立长期信任'
+                ],
+                tips: '关键目标：用价值打动学员',
+                scripts: [
+                    {
+                        scene: '发送试音机会',
+                        content: '🤝我给大家提供的试音单，已发到群里，你看到了吧？\n✍️如果会录制的话，可以挑选自己感兴趣的文本积极参与试音，用手机自带录音功能录制，录制好后私信发我即可，我会转发给工作室的审听大大进行审听'
+                    },
+                    {
+                        scene: '分享成功案例',
+                        content: '给你看一个学姐的案例~\n她之前也是零基础，学了2个月就开始接单了\n现在每个月能赚XXX\n我觉得你也可以的！'
+                    },
+                    {
+                        scene: '建立信任',
+                        content: '做有声书主播，既能练好声音，又能通过读书学习很多知识\n还能自由灵活安排时间，也没啥麻烦的人际关系\n还有机会拿到不错的收入\n我觉得很适合你，加油！'
+                    }
+                ]
+            },
+            '5': {
+                name: 'Day5',
+                title: '结营',
+                tasks: [
+                    '发送结营通知',
+                    '最后转化机会',
+                    '感谢学员参与',
+                    '引导关注后续课程'
+                ],
+                tips: '关键目标：最后转化机会',
+                scripts: [
+                    {
+                        scene: '结营通知',
+                        content: '🎉恭喜你完成了5天的学习！\n这几天辛苦了，有什么收获吗？\n有问题随时来找我哈~'
+                    },
+                    {
+                        scene: '最后转化机会',
+                        content: '宝，今天是最后一天了\n我给你申请的福利名额还在\n如果你真的想进入有声行业，现在报名是最划算的\n错过今天就没有这个福利了'
+                    },
+                    {
+                        scene: '感谢学员',
+                        content: '感谢这几天跟着我学习~\n不管你最后有没有报名，我都希望你在有声这条路上越走越远\n有问题随时来找我，我一直都在'
+                    }
+                ]
+            },
+            '12': {
+                name: 'Day12',
+                title: '回捞节点',
+                tasks: [
+                    '营期结束后的回捞机会',
+                    '联系之前有意向但未转化的学员',
+                    '发送新的福利信息',
+                    '尝试激活沉睡学员'
+                ],
+                tips: '关键目标：激活沉睡学员，二次转化',
+                scripts: [
+                    {
+                        scene: '回捞话术',
+                        content: '宝，好久不见！\n最近在忙什么呢？\n之前你说对有声感兴趣，现在还有这个想法吗？'
+                    },
+                    {
+                        scene: '新福利激活',
+                        content: '告诉你一个好消息！\n最近有个新活动，福利比之前更好\n如果你现在想报名，我可以帮你申请\n你觉得怎么样？'
+                    },
+                    {
+                        scene: '激活沉睡学员',
+                        content: '同学，之前训练营的学习资料你看了吗？\n有什么问题可以问我哈\n最近有新的课程，有兴趣可以了解一下~'
+                    }
+                ]
+            }
+        };
+        
+        function updateSchedule() {
+            const day = document.getElementById('campDay').value;
+            const data = scheduleData[day];
+            
+            // 更新今日任务
+            let tasksHtml = '';
+            data.tasks.forEach((task, i) => {
+                tasksHtml += '<div style="display: flex; align-items: center; padding: 12px; background: #f8fafc; border-radius: 8px; margin-bottom: 10px;">';
+                tasksHtml += '<span style="width: 30px; height: 30px; background: #4a90d9; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; flex-shrink: 0;">' + (i+1) + '</span>';
+                tasksHtml += '<span>' + task + '</span>';
+                tasksHtml += '</div>';
+            });
+            document.getElementById('todayTasks').innerHTML = tasksHtml;
+            
+            // 更新关键提示
+            let tipsHtml = '';
+            if (data.tips) {
+                tipsHtml = '<div class="result-box warning" style="margin-top: 20px;"><h4>💡 关键目标</h4><p>' + data.tips + '</p></div>';
+            }
+            
+            // 更新话术
+            let scriptsHtml = '';
+            if (data.scripts && data.scripts.length > 0) {
+                scriptsHtml = '<div class="card" style="margin-top: 20px;"><h3>📝 今日话术（可直接复制使用）</h3>';
+                data.scripts.forEach((script, i) => {
+                    scriptsHtml += '<div style="margin-bottom: 20px; padding: 15px; background: white; border-radius: 8px; border: 1px solid #e2e8f0;">';
+                    scriptsHtml += '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">';
+                    scriptsHtml += '<h4 style="color: #1e3a5f;">' + script.scene + '</h4>';
+                    scriptsHtml += '<button onclick="copyText(this)" style="background: #4a90d9; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;">复制</button>';
+                    scriptsHtml += '</div>';
+                    scriptsHtml += '<div class="script-content" style="background: #f8fafc; padding: 12px; border-radius: 6px; white-space: pre-wrap; line-height: 1.8; color: #334155; font-size: 14px;">' + script.content + '</div>';
+                    scriptsHtml += '</div>';
+                });
+                scriptsHtml += '</div>';
+            }
+            
+            // 组合显示
+            document.getElementById('todayTasks').innerHTML = tasksHtml + tipsHtml + scriptsHtml;
+            
+            // 更新时间线
+            let timelineHtml = '';
+            Object.keys(scheduleData).forEach(d => {
+                const item = scheduleData[d];
+                const isActive = d === day;
+                timelineHtml += '<div class="timeline-item' + (isActive ? ' active' : '') + '">';
+                timelineHtml += '<h4>' + item.name + ' ' + item.title + '</h4>';
+                timelineHtml += '<p>' + item.tasks.slice(0, 2).join('、') + '</p>';
+                timelineHtml += '</div>';
+            });
+            document.getElementById('timeline').innerHTML = timelineHtml;
+        }
+        
+        // 复制话术
+        function copyText(btn) {
+            const content = btn.parentElement.nextElementSibling.textContent;
+            navigator.clipboard.writeText(content).then(() => {
+                const originalText = btn.textContent;
+                btn.textContent = '已复制!';
+                btn.style.background = '#10b981';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = '#4a90d9';
+                }, 1500);
+            });
+        }
+        
+        // 页面加载时初始化
+        updateSchedule();
+    </script>
+</body>
+</html>
