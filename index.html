@@ -90,11 +90,33 @@
         .chat-stat .value { font-size: 24px; font-weight: bold; color: #1e3a5f; }
         .chat-stat .label { font-size: 12px; color: #64748b; }
         
+        /* Table */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        .comparison-table th, .comparison-table td {
+            padding: 10px 12px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+        .comparison-table th {
+            background: #f1f5f9;
+            color: #1e3a5f;
+            font-weight: 600;
+        }
+        .comparison-table tbody tr:hover {
+            background: #f8fafc;
+        }
+        
         /* Responsive */
         @media (max-width: 768px) {
             .nav { flex-direction: column; align-items: center; }
             .stats-grid { grid-template-columns: repeat(2, 1fr); }
             .chat-stats { grid-template-columns: repeat(2, 1fr); }
+            .comparison-table { font-size: 12px; }
+            .comparison-table th, .comparison-table td { padding: 6px 8px; }
         }
         
         /* Login Page */
@@ -390,6 +412,141 @@
                         <p>2. <strong>到课表现：</strong>1元班各天到课率均高于0元班10-15个百分点</p>
                         <p>3. <strong>流量建议：</strong>1元班仅占12%流量但贡献20%GMV，建议提升1元班流量占比</p>
                         <p>4. <strong>0元班问题：</strong>Day2到课率仅23.4%，是转化关键瓶颈</p>
+                    </div>
+                </div>
+                
+                <!-- 李东升组专项分析 -->
+                <div class="card" style="margin-top: 20px; border-left: 4px solid #ef4444;">
+                    <h3 style="color: #ef4444;">👥 李东升组 专项分析</h3>
+                    <p style="color: #64748b; margin-bottom: 15px; font-size: 14px;">数据时间：2026-04-21 | 班型：100% 0元班</p>
+                    
+                    <h4 style="margin: 20px 0 10px; color: #1e3a5f;">📊 核心指标 vs 大盘对比</h4>
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>指标</th>
+                                <th style="background: #fef2f2;">李东升组</th>
+                                <th style="background: #f0fdf4;">大盘平均</th>
+                                <th>差距</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>GMV</strong></td>
+                                <td>4.59万</td>
+                                <td style="font-weight: bold;">-</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td><strong>转化率</strong></td>
+                                <td style="color: #ef4444; font-weight: bold;">2.61%</td>
+                                <td>2.81%</td>
+                                <td style="color: #ef4444;">低 0.20pp</td>
+                            </tr>
+                            <tr>
+                                <td><strong>加微价值</strong></td>
+                                <td style="color: #ef4444; font-weight: bold;">160元</td>
+                                <td>168元</td>
+                                <td style="color: #ef4444;">低 8元</td>
+                            </tr>
+                            <tr>
+                                <td><strong>助教数</strong></td>
+                                <td>15</td>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td><strong>转化人数</strong></td>
+                                <td>12</td>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <h4 style="margin: 20px 0 10px; color: #1e3a5f;">📺 到课率 vs 大盘对比</h4>
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>到课率</th>
+                                <th style="background: #fef2f2;">李东升组</th>
+                                <th style="background: #f0fdf4;">大盘平均</th>
+                                <th>差距</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Day0</strong></td>
+                                <td style="color: #ef4444; font-weight: bold;">32.5%</td>
+                                <td>38.1%</td>
+                                <td style="color: #ef4444;">低 5.6pp</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Day1</strong></td>
+                                <td style="color: #ef4444; font-weight: bold;">18.5%</td>
+                                <td>26.6%</td>
+                                <td style="color: #ef4444;">低 8.1pp</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Day2</strong></td>
+                                <td style="color: #ef4444; font-weight: bold;">19.2%</td>
+                                <td>23.4%</td>
+                                <td style="color: #ef4444;">低 4.2pp</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <h4 style="margin: 20px 0 10px; color: #1e3a5f;">⚠️ 问题助教明细（转化率=0）</h4>
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>助教</th>
+                                <th>加微</th>
+                                <th>转化</th>
+                                <th>转化率</th>
+                                <th>GMV</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>小七</td><td>35</td><td>0</td><td style="color:#ef4444;font-weight:bold">0%</td><td>0</td></tr>
+                            <tr><td>小满</td><td>28</td><td>0</td><td style="color:#ef4444;font-weight:bold">0%</td><td>0</td></tr>
+                            <tr><td>小希</td><td>22</td><td>0</td><td style="color:#ef4444;font-weight:bold">0%</td><td>0</td></tr>
+                            <tr><td>小语</td><td>18</td><td>0</td><td style="color:#ef4444;font-weight:bold">0%</td><td>0</td></tr>
+                            <tr><td>小乐</td><td>15</td><td>0</td><td style="color:#ef4444;font-weight:bold">0%</td><td>0</td></tr>
+                        </tbody>
+                    </table>
+                    
+                    <h4 style="margin: 20px 0 10px; color: #1e3a5f;">⭐ 优秀助教（转化率>5%）</h4>
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>助教</th>
+                                <th>加微</th>
+                                <th>转化</th>
+                                <th>转化率</th>
+                                <th>GMV</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><strong>晶晶</strong></td><td>32</td><td>3</td><td style="color:#10b981;font-weight:bold">9.4%</td><td>3.01万</td></tr>
+                            <tr><td><strong>小月</strong></td><td>28</td><td>2</td><td style="color:#10b981;font-weight:bold">7.1%</td><td>1.58万</td></tr>
+                        </tbody>
+                    </table>
+                    
+                    <div class="result-box error" style="margin-top: 15px;">
+                        <h4>🔍 问题诊断</h4>
+                        <p><strong>1. 班型单一：</strong>100%为0元班，无1元班资源，先天转化难度更高</p>
+                        <p><strong>2. 到课率全面偏低：</strong>Day0/Day1/Day2到课率均低于大盘，尤其是Day1差距达8.1pp</p>
+                        <p><strong>3. 部分助教表现差：</strong>5名助教转化率为0，需重点帮扶或调整</p>
+                        <p><strong>4. 转化率偏低：</strong>2.61%低于大盘2.81%，差距0.20pp</p>
+                    </div>
+                    
+                    <div class="result-box" style="margin-top: 15px; background: #dbeafe; border-color: #3b82f6;">
+                        <h4 style="color: #1e40af;">💡 改进建议</h4>
+                        <p><strong>1. 到课率提升：</strong>加强开播前提醒频次，Day1到课率是关键瓶颈</p>
+                        <p><strong>2. 助教帮扶：</strong>对转化率为0的助教进行话术培训、私聊诊断</p>
+                        <p><strong>3. 班型优化：</strong>申请配置部分1元班资源，提升整体转化率</p>
+                        <p><strong>4. 优秀复制：</strong>让晶晶、小月分享成功经验，带动团队整体提升</p>
                     </div>
                 </div>
             </div>
