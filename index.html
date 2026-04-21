@@ -181,7 +181,8 @@
         </div>
         
         <div class="nav">
-            <button class="nav-btn active" onclick="showSection('dashboard')">📊 数据看板</button>
+            <button class="nav-btn active" onclick="showSection('report')">📄 专属报告</button>
+            <button class="nav-btn" onclick="showSection('dashboard')">📊 数据看板</button>
             <button class="nav-btn" onclick="showSection('scripts')">💬 话术助手</button>
             <button class="nav-btn" onclick="showSection('chat')">🔍 私聊诊断</button>
             <button class="nav-btn" onclick="showSection('students')">📋 学员画像</button>
@@ -189,8 +190,205 @@
         </div>
         
         <div class="main-content">
+            <!-- 专属报告 -->
+            <div id="report" class="section active">
+                <h2 class="section-title">📄 专属分析报告</h2>
+                <p style="color: #64748b; margin-bottom: 20px;">数据更新时间：2026-04-21 | 数据来源：体验营转化过程汇总</p>
+                
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="value">514.2万</div>
+                        <div class="label">总GMV</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="value">2.81%</div>
+                        <div class="label">整体转化率</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="value">168元</div>
+                        <div class="label">加微用户价值</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="value">858人</div>
+                        <div class="label">总转化人数</div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>📊 班型对比分析</h3>
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>班型</th>
+                                <th>GMV</th>
+                                <th>加微人数</th>
+                                <th>转化人数</th>
+                                <th>转化率</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>1元班</strong></td>
+                                <td>51.00万</td>
+                                <td>1,817</td>
+                                <td>88</td>
+                                <td><span style="color: #10b981; font-weight: bold;">4.84%</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>0元班</strong></td>
+                                <td>206.10万</td>
+                                <td>13,467</td>
+                                <td>341</td>
+                                <td><span style="color: #f59e0b;">2.53%</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="result-box warning" style="margin-top: 15px;">
+                        <h4>💡 关键发现</h4>
+                        <p>1元班转化率(4.84%)是0元班(2.53%)的<strong>1.9倍</strong>，建议增加1元班流量占比</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>📺 直播到课率分析</h3>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 15px 0;">
+                        <div style="text-align: center; padding: 20px; background: #f8fafc; border-radius: 8px;">
+                            <div style="font-size: 28px; font-weight: bold; color: #4a90d9;">39.7%</div>
+                            <div style="color: #64748b; margin-top: 5px;">Day0 到课率</div>
+                        </div>
+                        <div style="text-align: center; padding: 20px; background: #f8fafc; border-radius: 8px;">
+                            <div style="font-size: 28px; font-weight: bold; color: #f59e0b;">28.1%</div>
+                            <div style="color: #64748b; margin-top: 5px;">Day1 到课率</div>
+                        </div>
+                        <div style="text-align: center; padding: 20px; background: #f8fafc; border-radius: 8px;">
+                            <div style="font-size: 28px; font-weight: bold; color: #ef4444;">24.5%</div>
+                            <div style="color: #64748b; margin-top: 5px;">Day2 到课率</div>
+                        </div>
+                    </div>
+                    <div class="result-box error" style="margin-top: 15px;">
+                        <h4>⚠️ 问题预警</h4>
+                        <p>Day2到课率仅24.5%，是转化关键节点，需要重点提升！建议：开播前多次提醒、一对一私聊通知、语音/电话提醒</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>🏆 Top 10 组长（按GMV）</h3>
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>排名</th>
+                                <th>组长</th>
+                                <th>GMV</th>
+                                <th>加微</th>
+                                <th>转化</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>1</td><td><strong>刘鹏瑞组</strong></td><td>60.26万</td><td>2,654</td><td>101</td></tr>
+                            <tr><td>2</td><td><strong>冯建军组</strong></td><td>38.10万</td><td>1,642</td><td>59</td></tr>
+                            <tr><td>3</td><td><strong>王含笑组</strong></td><td>30.27万</td><td>2,059</td><td>53</td></tr>
+                            <tr><td>4</td><td><strong>曹宇翾组</strong></td><td>26.35万</td><td>1,798</td><td>44</td></tr>
+                            <tr><td>5</td><td><strong>汪碧红组</strong></td><td>15.17万</td><td>1,227</td><td>27</td></tr>
+                            <tr><td>6</td><td><strong>李东升组</strong></td><td>13.52万</td><td>843</td><td>22</td></tr>
+                            <tr><td>7</td><td><strong>刘国旭组</strong></td><td>11.02万</td><td>774</td><td>20</td></tr>
+                            <tr><td>8</td><td><strong>培训组-宝珠组</strong></td><td>8.29万</td><td>528</td><td>14</td></tr>
+                            <tr><td>9</td><td><strong>刘国旭-全职组</strong></td><td>7.27万</td><td>803</td><td>14</td></tr>
+                            <tr><td>10</td><td><strong>培训组-星光点点组</strong></td><td>6.95万</td><td>481</td><td>12</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="card">
+                    <h3>⭐ Top 10 助教（按转化率，加微>50）</h3>
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>排名</th>
+                                <th>助教</th>
+                                <th>组长</th>
+                                <th>转化率</th>
+                                <th>GMV</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>1</td><td><strong>王小仙</strong></td><td>刘鹏瑞组</td><td style="color: #10b981; font-weight: bold;">11.8%</td><td>3.07万</td></tr>
+                            <tr><td>2</td><td><strong>何婉宁</strong></td><td>王含笑组</td><td style="color: #10b981; font-weight: bold;">11.1%</td><td>4.09万</td></tr>
+                            <tr><td>3</td><td><strong>萌桃</strong></td><td>刘鹏瑞组</td><td style="color: #10b981; font-weight: bold;">10.7%</td><td>3.75万</td></tr>
+                            <tr><td>4</td><td><strong>CV蔷薇</strong></td><td>培训组-星光点点组</td><td>9.8%</td><td>2.67万</td></tr>
+                            <tr><td>5</td><td><strong>伊然</strong></td><td>刘鹏瑞组</td><td>9.4%</td><td>3.35万</td></tr>
+                            <tr><td>6</td><td><strong>晶晶</strong></td><td>李东升组</td><td>9.4%</td><td>3.01万</td></tr>
+                            <tr><td>7</td><td><strong>李艺</strong></td><td>沈鹏飞组</td><td>9.3%</td><td>3.01万</td></tr>
+                            <tr><td>8</td><td><strong>懂孟梦</strong></td><td>冯建军组</td><td>9.1%</td><td>3.35万</td></tr>
+                            <tr><td>9</td><td><strong>100桃子</strong></td><td>冯建军组</td><td>8.9%</td><td>3.35万</td></tr>
+                            <tr><td>10</td><td><strong>布丁</strong></td><td>刘鹏瑞组</td><td>8.2%</td><td>3.41万</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="card">
+                    <h3>📋 李东升组专项分析</h3>
+                    <div class="stats-grid" style="grid-template-columns: repeat(4, 1fr);">
+                        <div class="stat-box" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                            <div class="value">13.52万</div>
+                            <div class="label">组GMV</div>
+                        </div>
+                        <div class="stat-box" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                            <div class="value">2.61%</div>
+                            <div class="label">组转化率</div>
+                        </div>
+                        <div class="stat-box" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                            <div class="value">843</div>
+                            <div class="label">组加微</div>
+                        </div>
+                        <div class="stat-box" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                            <div class="value">16</div>
+                            <div class="label">助教数</div>
+                        </div>
+                    </div>
+                    
+                    <div class="result-box error" style="margin-top: 15px;">
+                        <h4>⚠️ 核心问题</h4>
+                        <p><strong>班型失衡：</strong>100%为0元班，无1元班流量。1元班转化率是0元班的1.9倍，建议争取1元班资源</p>
+                    </div>
+                    
+                    <h4 style="margin: 20px 0 10px; color: #1e3a5f;">组内助教明细</h4>
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>助教</th>
+                                <th>GMV</th>
+                                <th>加微</th>
+                                <th>转化</th>
+                                <th>转化率</th>
+                                <th>等级</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="background: #f0fdf4;"><td><strong>晶晶</strong></td><td>3.01万</td><td>53</td><td>5</td><td style="color: #10b981; font-weight: bold;">9.4%</td><td>A</td></tr>
+                            <tr><td>蓝雪</td><td>2.21万</td><td>58</td><td>3</td><td>5.2%</td><td>B</td></tr>
+                            <tr><td>十二笙箫</td><td>1.87万</td><td>54</td><td>3</td><td>5.6%</td><td>D</td></tr>
+                            <tr><td>掌中线</td><td>1.53万</td><td>55</td><td>3</td><td>5.5%</td><td>B</td></tr>
+                            <tr><td>十二笙箫</td><td>0.80万</td><td>53</td><td>2</td><td>3.8%</td><td>D</td></tr>
+                            <tr style="background: #fef2f2;"><td>103小麦</td><td>0.00万</td><td>55</td><td>0</td><td style="color: #ef4444;">0.0%</td><td>D</td></tr>
+                            <tr style="background: #fef2f2;"><td>静心</td><td>0.00万</td><td>54</td><td>0</td><td style="color: #ef4444;">0.0%</td><td>C</td></tr>
+                            <tr style="background: #fef2f2;"><td>娜姐班班</td><td>0.00万</td><td>55</td><td>0</td><td style="color: #ef4444;">0.0%</td><td>D</td></tr>
+                            <tr style="background: #fef2f2;"><td>小诗晚晚</td><td>0.00万</td><td>54</td><td>0</td><td style="color: #ef4444;">0.0%</td><td>B</td></tr>
+                            <tr style="background: #fef2f2;"><td>墨笙</td><td>0.00万</td><td>21</td><td>0</td><td style="color: #ef4444;">0.0%</td><td>D</td></tr>
+                        </tbody>
+                    </table>
+                    
+                    <div class="result-box" style="margin-top: 15px;">
+                        <h4>💡 改进建议</h4>
+                        <p>1. <strong>标杆学习：</strong>晶晶转化率9.4%，建议分享其成功经验</p>
+                        <p>2. <strong>重点帮扶：</strong>5名助教转化率为0，需要一对一指导</p>
+                        <p>3. <strong>班型优化：</strong>争取1元班流量资源</p>
+                        <p>4. <strong>等级异常：</strong>小诗晚晚(B级)转化率为0，需排查原因</p>
+                    </div>
+                </div>
+            </div>
+            
             <!-- 数据看板 -->
-            <div id="dashboard" class="section active">
+            <div id="dashboard" class="section">
                 <h2 class="section-title">📊 数据看板</h2>
                 
                 <div class="card">
